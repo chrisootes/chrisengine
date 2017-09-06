@@ -12,6 +12,10 @@ from pygame.locals import *
 window_x = 800
 window_y = 600
 
+camera_x = 0.0
+camera_y = 0.0
+camera_z = 0.0
+
 def init_screen():
     'init pygame display'
     pygame.display.init()
@@ -21,6 +25,9 @@ def init_screen():
 def reshape_screen():
     'reshape screen'
     pygame.display.set_mode((window_x, window_y), HWSURFACE|OPENGL|DOUBLEBUF,)
+    glLoadIdentity()
+    glViewport(0, 0, window_x, window_y);
+    gluPerspective(65.0, (window_x/window_y), 0.1, 200.0)
 
 def update_screen():
     'update pygame display'
@@ -45,13 +52,11 @@ def init_opengl():
     glShadeModel(GL_SMOOTH)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
-def camera_loop(angle_x, angle_y):
+def camera_loop(angle_y, angle_x):
     'camera inversed because everything rotates around the camera'
-    glMatrixMode(GL_PROJECTION)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()
-    gluPerspective(65.0, (window_x/window_y), 0.1, 200.0)
-    glViewport(0, 0, window_x, window_y);
+    glMatrixMode(GL_PROJECTION)
+
     glRotate(angle_y, 1.0, 0.0, 0.0)
     glRotate(angle_x, 0.0, 1.0, 0.0)
 

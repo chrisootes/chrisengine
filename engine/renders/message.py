@@ -1,5 +1,8 @@
-def object_create(id, position = [0.0, 0.0, 0.0], rotation = [0.0, 0.0, 0.0]):
-    return [0, id, position, rotation]
+def entity_create(entity_index, entity_position, entity_rotation):
+    return [0, entity_index, entity_position, entity_rotation]
 
-def object_edit(id, position = None, rotation = None):
-    return [1, id, position, rotation]
+def entity_move(entity_index, entity_translate, entity_rotate):
+    return [1, entity_index, entity_translate, entity_rotate]
+
+def camera_set(relative_position, relative_rotation):
+    return [2, relative_position, relative_rotation]

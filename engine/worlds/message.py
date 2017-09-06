@@ -1,5 +1,5 @@
-def object_create(id, position = [0.0, 0.0, 0.0], rotation = [0.0, 0.0, 0.0]):
-    return [0, id, position, rotation]
+def entity_create(entity_index, entity_position, entity_rotation, entity_translate, entity_rotate, entity_gravity):
+    return [0, entity_index, entity_position, entity_rotation, entity_translate, entity_rotate, entity_gravity]
 
-def object_edit(id, position = None, translate = None, rotation = None, rotate = None):
-    return [1, id, position, translate, rotation, rotate]
+def entity_move(entity_index, entity_translate, entity_rotate):
+    return [1, entity_index, entity_translate, entity_rotate]
