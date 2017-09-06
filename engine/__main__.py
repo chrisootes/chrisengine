@@ -12,7 +12,7 @@ from engine.renders.simple import SimpleRender
 logger = logging.getLogger(__name__)
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     logger.info("loading")
 
     #queue
@@ -32,10 +32,15 @@ def main():
     render_thread = SimpleRender(queue_render)
     render_thread.start()
 
-    time.sleep(10)
+    time.sleep(20)
     input_thread.stop()
+    input_thread.join()
     world_thread.stop()
+    world_thread.join()
     render_thread.stop()
+    render_thread.join()
+
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main())

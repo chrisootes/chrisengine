@@ -15,7 +15,11 @@ class SimpleRender(threading.Thread):
         self.queue_render = queue_render
 
     def run(self):
-        'main loop'
+        'main render loop'
+        camera_id = 0
+        light_id = 1
+
+        entities = [[camera_id, [0.0,0.0,0.0], [0.0,0.0,0.0]], [light_id, [0.0,20.0,0.0], [0.0,0.0,0.0]]]
 
         init_screen()
         init_opengl()
@@ -25,11 +29,42 @@ class SimpleRender(threading.Thread):
         obj_id = list_file('./obj.msh')
 
         while not self.event_end.is_set():
-            #render camera
-            camera_loop()
+            #get queue
+            queue_render_data = []
+            while True:
+                try:
+                    queue_render_data.append(self.queue_render.get(block=False))
+                except queue.Empty:
+                    break
 
-            #set glLight
-            light_loop()
+            #logger.debug("render queue data: {}".format(queue_render_data))
+
+            #update entities positions
+            for command in queue_render_data:
+                if command[0] == 0:
+                    entities.append([command[1], command[2], command[3]])
+                elif command[0] == 1:
+                    if command[2] != None:
+                        for i in range(0,3):
+                            entities[command[1]][1][i] = command[2][i]
+                    if command[3] != None:
+                        for i in range(0,3):
+                            entities[command[1]][2][i] = command[3][i]
+
+            logger.debug("entities: {}".format(entities))
+
+            #render entities
+            for entity in entities:
+                if entity[0] == camera_id:
+                    #render camera
+                    camera_loop(entity[2][0], entity[2][1])
+
+                elif entity[0] == light_id:
+                    #set glLight
+                    light_loop(entity[1][0], entity[1][1], entity[1][2])
+
+                else:
+                    pass
 
             #render all
             render_obj(obj_id, 0.1)
@@ -37,6 +72,11 @@ class SimpleRender(threading.Thread):
 
             #flip
             update_screen()
+
+            #limit frames
+            time.sleep(0.01)
+
+        logger.warning("stopped")
 
     def stop(self):
         logger.warning("stopping")

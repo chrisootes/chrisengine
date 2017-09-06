@@ -15,8 +15,12 @@ window_y = 600
 def init_screen():
     'init pygame display'
     pygame.display.init()
-    pygame.display.set_mode((int(window_x),int(window_y)), HWSURFACE|OPENGL|DOUBLEBUF,)
+    pygame.display.set_mode((window_x, window_y), HWSURFACE|OPENGL|DOUBLEBUF,)
     pygame.display.set_caption('Test','Test')
+
+def reshape_screen():
+    'reshape screen'
+    pygame.display.set_mode((window_x, window_y), HWSURFACE|OPENGL|DOUBLEBUF,)
 
 def update_screen():
     'update pygame display'
@@ -41,31 +45,25 @@ def init_opengl():
     glShadeModel(GL_SMOOTH)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
-def camera_loop():
-    'camera at (22,28,-18) looking at (0,0,0)'
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+def camera_loop(angle_x, angle_y):
+    'camera inversed because everything rotates around the camera'
     glMatrixMode(GL_PROJECTION)
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     gluPerspective(65.0, (window_x/window_y), 0.1, 200.0)
+    glViewport(0, 0, window_x, window_y);
+    glRotate(angle_y, 1.0, 0.0, 0.0)
+    glRotate(angle_x, 0.0, 1.0, 0.0)
 
+def light_loop(light_x, light_y, light_z):
+    'light above camera'
     glMatrixMode(GL_MODELVIEW)
-
-    glLoadIdentity()
-    gluLookAt(  22.0, 28.0, -18.0,
-                0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0 )
-
-    glViewport(0, 0, window_x, window_y)
-
-def light_loop():
-    'light which change position every frame'
     glPushMatrix()
     glDisable(GL_LIGHTING)
     glPointSize(5.0)
     glBegin(GL_POINTS)
-    glColor4f(1.0,1.0,1.0,1.0)
-    glVertex4fv((0.0,20.0,0.0,1.0))
+    glColor4f(1.0, 1.0, 1.0, 1.0)
+    glVertex4fv((light_x, light_y, light_z, 1.0))
     glEnd()
     glPopMatrix()
 
@@ -116,15 +114,16 @@ def list_file(vtx_file):
 
     return id_list
 
-def render_floor(listID):
+def render_floor(list_id):
     'render floor'
+    glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
-    glCallList(listID)
+    glCallList(list_id)
     glPopMatrix()
 
-def render_obj(listID, rot):
-    'render (really easy) animated object'
+def render_obj(list_id, rot):
+    'render object'
+    glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
-    glRotate(rot, 0.0, 0.0, 0.0)
-    glCallList(listID)
+    glCallList(list_id)
     glPopMatrix()
